@@ -28,9 +28,22 @@ export default function Transfer({ onTransfer }) {
     }
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    window.location.reload();
+  };
+
   return (
     <div className="container">
       <div className="card">
+        <button
+          className="button"
+          style={{ background: "#dc2626", marginBottom: "16px" }}
+          onClick={handleLogout}
+        >
+          Logout
+        </button>
+
         <h2>Transfer Funds</h2>
 
         <form onSubmit={handleTransfer}>
