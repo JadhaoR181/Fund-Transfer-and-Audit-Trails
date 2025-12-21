@@ -1,24 +1,41 @@
 import { useState } from "react";
 import api from "../api/api";
-import { Wallet, User, Lock, XCircle } from "lucide-react";
+import { Wallet, User, Mail, Lock, XCircle } from "lucide-react";
 
-export default function Login({ onLogin, onSwitchToRegister }) {
+export default function Register({ onSwitchToLogin }) {
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
-  const handleLogin = async (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault();
     setError("");
+    setSuccess("");
     setLoading(true);
 
     try {
-      const res = await api.post("/auth/login", { email, password });
-      localStorage.setItem("token", res.data.access_token);
-      onLogin();
-    } catch {
-      setError("Invalid email or password");
+      await api.post("/auth/register", {
+        name,
+        email,
+        password,
+      });
+
+      setSuccess("Account created successfully. Redirecting to login...");
+
+setTimeout(() => {
+  onSwitchToLogin();
+}, 1000);
+
+      setName("");
+      setEmail("");
+      setPassword("");
+    } catch (err) {
+      setError(
+        err.response?.data?.detail || "Registration failed"
+      );
     } finally {
       setLoading(false);
     }
@@ -34,22 +51,39 @@ export default function Login({ onLogin, onSwitchToRegister }) {
             <Wallet className="w-6 h-6" />
           </div>
           <h1 className="text-xl font-semibold text-slate-800">
-            LenDenClub
+            Create Account
           </h1>
           <p className="text-sm text-slate-500">
-            Secure fund transfers and Audi trail
+            Join LenDenClub
           </p>
         </div>
 
         {/* Form */}
-        <form onSubmit={handleLogin} className="space-y-4">
+        <form onSubmit={handleRegister} className="space-y-4">
           
+          <div>
+            <label className="block text-xs font-medium text-slate-600 mb-1">
+              Name
+            </label>
+            <div className="relative">
+              <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+              <input
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="w-full pl-9 pr-3 py-2.5 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                placeholder="Your name"
+                required
+              />
+            </div>
+          </div>
+
           <div>
             <label className="block text-xs font-medium text-slate-600 mb-1">
               Email
             </label>
             <div className="relative">
-              <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
               <input
                 type="email"
                 value={email}
@@ -86,31 +120,31 @@ export default function Login({ onLogin, onSwitchToRegister }) {
             </div>
           )}
 
+          {/* Success */}
+          {success && (
+            <div className="text-sm text-green-600 bg-green-50 border border-green-200 rounded-lg px-3 py-2">
+              {success}
+            </div>
+          )}
+
           {/* Submit */}
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-indigo-600 text-white py-2.5 rounded-lg text-sm font-medium hover:bg-indigo-700 transition disabled:opacity-50 flex items-center justify-center gap-2"
+            className="w-full bg-indigo-600 text-white py-2.5 rounded-lg text-sm font-medium hover:bg-indigo-700 transition disabled:opacity-50"
           >
-            {loading ? (
-              <>
-                <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                Signing in
-              </>
-            ) : (
-              "Sign In"
-            )}
+            {loading ? "Creating..." : "Register"}
           </button>
         </form>
 
         {/* Footer */}
         <div className="mt-5 text-center text-sm text-slate-600">
-          Don’t have an account?{" "}
+          Already have an account?{" "}
           <button
-            onClick={onSwitchToRegister}
+            onClick={onSwitchToLogin}
             className="text-indigo-600 font-medium hover:underline"
           >
-            Register
+            Login
           </button>
         </div>
       </div>
