@@ -80,95 +80,75 @@ The system is designed to demonstrate **backend correctness, data integrity, and
 
 ---
 
-## 🔌 API Documentation
+## 📁 Project Structure
 
-### 🔐 Authentication APIs
-
-#### `POST /auth/register`
-Registers a new user in the system.
-
-- **Access:** Public  
-- **Description:**  
-  Creates a new user account using name, email, and password.  
-  Passwords are securely hashed before being stored in the database.
-- **Used in:** Frontend Registration Page
-
----
-
-#### `POST /auth/login`
-Authenticates an existing user.
-
-- **Access:** Public  
-- **Description:**  
-  Validates user credentials and returns a JWT access token on successful authentication.
-- **Used in:** Frontend Login Page  
-- **Response:** JWT access token required for all protected APIs
-
----
-
-### 💸 Transaction API
-
-#### `POST /transfer`
-Executes a peer-to-peer fund transfer.
-
-- **Access:** Authenticated  
-- **Description:**  
-  Transfers funds from the logged-in user (sender) to another user (receiver).  
-  The operation is wrapped inside a database transaction to ensure **atomicity** —  
-  both debit and credit either succeed together or fail together.
-- **Side Effects:**  
-  - Deducts balance from sender  
-  - Credits balance to receiver  
-  - Creates a transaction record  
-  - Writes an immutable audit log entry
-- **Used in:** Frontend Transfer Form
-
----
-
-### 📊 Read APIs
-
-#### `GET /transactions/me`
-Fetches transaction history for the logged-in user.
-
-- **Access:** Authenticated  
-- **Description:**  
-  Returns a list of transactions where the user is either the sender or receiver.  
-  This data is optimized for frontend display and user clarity.
-- **Used in:** Transaction History Table (Frontend)
+```
+Fund-Transfer-and-Audit-Trails/
+├── backend/
+│   ├── app/
+│   │   ├── core/               # Core logic (security, auth dependencies)
+│   │   │   ├── auth_dependency.py
+│   │   │   └── security.py
+│   │   ├── db/                 # Database models and session management
+│   │   │   ├── __init__.py
+│   │   │   ├── database.py
+│   │   │   └── models.py
+│   │   ├── routes/             # API endpoints
+│   │   │   ├── __init__.py
+│   │   │   ├── auth.py
+│   │   │   ├── audit_logs.py
+│   │   │   ├── transfer.py
+│   │   │   └── users.py
+│   │   ├── schemas/            # Pydantic schemas for data validation
+│   │   │   ├── __init__.py
+│   │   │   ├── auth.py
+│   │   │   ├── audit_logs.py
+│   │   │   ├── transfer.py
+│   │   │   └── users.py
+│   │   ├── main.py             # FastAPI application entry point
+│   │   └── __init__.py
+│   ├── .env.example            # Example environment file
+│   ├── .gitignore
+│   ├── requirements.txt
+│   └── README.md               # Backend README (if any)
+├── frontend/
+│   ├── public/                 # Static assets
+│   ├── src/                    # Frontend source code
+│   │   ├── assets/             # Images, icons, etc.
+│   │   ├── components/         # Reusable UI components
+│   │   ├── pages/              # Application pages/views
+│   │   ├── services/           # API interaction logic
+│   │   ├── App.jsx
+│   │   ├── main.jsx            # Frontend entry point
+│   │   └── index.css
+│   ├── .eslintrc.cjs           # ESLint configuration
+│   ├── .gitignore
+│   ├── index.html              # HTML template
+│   ├── package.json            # Frontend dependencies and scripts
+│   ├── postcss.config.js       # PostCSS configuration
+│   ├── README.md               # Frontend README (from Vite template)
+│   ├── tailwind.config.js      # Tailwind CSS configuration
+│   └── vite.config.js          # Vite configuration
+└── README.md                   # Main project README (this file)
+```
 
 ---
 
-#### `GET /audit-logs/me`
-Fetches audit log records related to the logged-in user.
+## 🔌 API Endpoints
 
-- **Access:** Authenticated  
-- **Description:**  
-  Returns immutable audit log entries for traceability and compliance.  
-  These logs are stored separately from user-facing transaction records.
-- **Used in:** Audit Logs Toggle View (Frontend)
+### Auth
+- `POST /auth/register`
+- `POST /auth/login`
 
----
+### Transfer
+- `POST /transfer` – Atomic fund transfer
 
-#### `GET /users/me`
-Fetches current user details.
-
-- **Access:** Authenticated  
-- **Description:**  
-  Returns profile information of the logged-in user, including current balance.
-- **Used in:**  
-  - Dashboard balance display  
-  - User avatar and profile section
+### Read APIs
+- `GET /transactions/me` – User-facing transaction history
+- `GET /audit-logs/me` – Audit log history for the user
+- `GET /users/me` – Current user details
 
 ---
-
-## 🧠 API Design Rationale
-
-- **Clear separation of concerns**
-  - Transactions → User experience  
-  - Audit Logs → Compliance and traceability
-- **Atomic database operations** ensure financial correctness
-- **JWT-based authentication** secures all sensitive endpoints
-
 ---
 
 ## 🚀 Setup Instructions
