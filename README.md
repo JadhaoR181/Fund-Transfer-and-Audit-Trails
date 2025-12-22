@@ -134,21 +134,164 @@ Fund-Transfer-and-Audit-Trails/
 
 ---
 
-## 🔌 API Endpoints
+# API Documentation (Postman Style)
 
-### Auth
-- `POST /auth/register`
-- `POST /auth/login`
+## Base URL
+```
+http://localhost:8000
+```
 
-### Transfer
-- `POST /transfer` – Atomic fund transfer
-
-### Read APIs
-- `GET /transactions/me` – User-facing transaction history
-- `GET /audit-logs/me` – Audit log history for the user
-- `GET /users/me` – Current user details
+All protected endpoints require the following header:
+```
+Authorization: Bearer <JWT_ACCESS_TOKEN>
+```
 
 ---
+
+## Authentication APIs
+
+### POST /auth/register
+Registers a new user in the system.
+
+**Request Body**
+```json
+{
+  "name": "Ravi Jadhav",
+  "email": "ravi@example.com",
+  "password": "password123"
+}
+```
+
+**Success Response**
+```json
+{
+  "message": "User registered successfully"
+}
+```
+
+---
+
+### POST /auth/login
+Authenticates a user and returns a JWT access token.
+
+**Request Body**
+```json
+{
+  "email": "ravi@example.com",
+  "password": "password123"
+}
+```
+
+**Success Response**
+```json
+{
+  "access_token": "<JWT_ACCESS_TOKEN>",
+  "token_type": "bearer"
+}
+```
+
+---
+
+## Transaction API
+
+### POST /transfer
+Transfers funds from the logged-in user to another user.  
+This operation is atomic.
+
+**Headers**
+```
+Authorization: Bearer <JWT_ACCESS_TOKEN>
+```
+
+**Request Body**
+```json
+{
+  "receiver_id": 2,
+  "amount": 500
+}
+```
+
+**Success Response**
+```json
+{
+  "message": "Transfer successful",
+  "amount": 500,
+  "receiver_id": 2,
+  "current_balance": 1500
+}
+```
+
+---
+
+## Read APIs
+
+### GET /transactions/me
+Returns transaction history for the logged-in user.
+
+**Headers**
+```
+Authorization: Bearer <JWT_ACCESS_TOKEN>
+```
+
+**Success Response**
+```json
+[
+  {
+    "id": 1,
+    "sender_id": 1,
+    "receiver_id": 2,
+    "amount": "500.00",
+    "status": "SUCCESS",
+    "created_at": "2025-01-10T14:32:45"
+  }
+]
+```
+
+---
+
+### GET /audit-logs/me
+Returns audit log records related to the logged-in user.
+
+**Headers**
+```
+Authorization: Bearer <JWT_ACCESS_TOKEN>
+```
+
+**Success Response**
+```json
+[
+  {
+    "id": 1,
+    "sender_id": 1,
+    "receiver_id": 2,
+    "amount": "500.00",
+    "status": "SUCCESS",
+    "timestamp": "2025-01-10T14:32:45"
+  }
+]
+```
+
+---
+
+### GET /users/me
+Returns the logged-in user's profile details.
+
+**Headers**
+```
+Authorization: Bearer <JWT_ACCESS_TOKEN>
+```
+
+**Success Response**
+```json
+{
+  "id": 1,
+  "name": "Ravi Jadhav",
+  "email": "ravi@example.com",
+  "balance": "1500.00",
+  "created_at": "2025-01-01T10:00:00"
+}
+```
+
 ---
 
 ## 🚀 Setup Instructions
@@ -166,7 +309,7 @@ Create a `.env` file with:
 DATABASE_URL=postgresql://user:password@localhost:5432/lendenclub
 SECRET_KEY=your_secret_key
 ALGORITHM=HS256
-ACCESS_TOKEN_EXPIRE_MINUTES=1440 // 24 hours
+ACCESS_TOKEN_EXPIRE_MINUTES=1440 //24 hours
 ```
 
 ### Frontend Setup
@@ -199,7 +342,7 @@ Cross-client live synchronization (WebSockets/SSE) was intentionally avoided as 
 
 ---
 
-## 🤖 AI Tool Usage Log (MANDATORY)
+## 🤖 AI Tool Usage Log
 
 ### AI-Assisted Tasks
 - Used ChatGPT to:
@@ -228,7 +371,12 @@ A short demo video showcasing:
 ---
 
 
----
+## 👨‍💻 Author
 
-## 👤 Developed By
 **Ravindra Jadhav**
+
+- **Email:** jadhaor181@gmail.com
+- **LinkedIn:** [ravindrajadhav08](https://linkedin.com/in/ravindrajadhav08/)
+- **GitHub:** [JadhaoR181](https://github.com/JadhaoR181/)
+- **Portfolio:** [View Portfolio](https://ravindra-portfolio-vite.vercel.app/)
+
